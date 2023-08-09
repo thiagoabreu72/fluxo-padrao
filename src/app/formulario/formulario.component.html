@@ -1,0 +1,35 @@
+<div class="card">
+  <div class="col">
+    <label for="posto">Posto de Trabalho</label>
+    <input
+      list="posto"
+      class="form-control"
+      #valorPosto
+      (click)="valorPosto.value = ''"
+      (change)="this.getPostoSelecionado(valorPosto.value)"
+    />
+    <datalist id="posto">
+      <option
+        *ngFor="let info of this.info_posto.dados"
+        [value]="info.posTra + ' - ' + info.desRed"
+      ></option>
+    </datalist>
+    <br />
+
+    <p-table
+      [value]="this.info_posto.selecionado"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Posto de Trabalho</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-posto>
+        <tr>
+          <td>{{ posto }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
