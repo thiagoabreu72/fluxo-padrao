@@ -6,7 +6,7 @@ interface DadosPosto {
 
 export interface Posto {
   numEmp: number;
-  dados?: any;
+  dados?: DadosPosto[];
   selecionado?: any;
   msgRet?: string;
 }

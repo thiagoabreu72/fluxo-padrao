@@ -1,20 +1,28 @@
 import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SpinnerComponent } from './spinner/spinner.component';
+import { MensagemComponent } from './mensagem/mensagem.component';
+import { FormularioComponent } from './formulario/formulario.component';
 
 //PRIMENG
 import { MultiSelectModule } from 'primeng/multiselect';
 import { CardModule } from 'primeng/card';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TableModule } from 'primeng/table';
-
-import { AppComponent } from './app.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FormularioComponent } from './formulario/formulario.component';
+import { MessageModule } from 'primeng/message';
+import { MessagesModule } from 'primeng/messages';
 
 @NgModule({
-  declarations: [AppComponent, FormularioComponent],
+  declarations: [
+    AppComponent,
+    FormularioComponent,
+    SpinnerComponent,
+    MensagemComponent,
+  ],
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -24,7 +32,8 @@ import { FormularioComponent } from './formulario/formulario.component';
     BrowserAnimationsModule,
     CardModule,
     CheckboxModule,
-    TableModule,
+    TableModule,MessageModule,
+    MessagesModule,
   ],
 
   providers: [],

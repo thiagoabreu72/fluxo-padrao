@@ -1,3 +1,5 @@
 <div>
-  <app-formulario></app-formulario>
+  <app-spinner [carregandoDados]="this.carregando"></app-spinner>
+  <app-formulario (dadosMensagem)="this.getDadosMensagem($event)" (dadosSpinner)="this.getValorSpinner($event)"></app-formulario>
+  <app-mensagem [dadosMensagem]="this.dadosMensagem" *ngIf="this.dadosMensagem.tipo !== 0"></app-mensagem>
 </div>

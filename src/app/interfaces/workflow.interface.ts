@@ -32,12 +32,13 @@ interface PlatformData {
   odataUrl: string;
   token: Token;
 }
+
 interface Token {
   token_type: string;
   access_token: string;
 }
 
-interface ProcessVariables {
-  key: string;
-  value: string;
+export interface ProcessVariables {
+  key?: string;
+  value?: string;
 }

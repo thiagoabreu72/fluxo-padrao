@@ -1,6 +1,6 @@
 export interface DadosUsuario {
-  access_token: string;
-  email: string;
+  access_token?: string;
+  email?: string;
   expires_in?: number;
   fullName?: string;
   locale?: string;
