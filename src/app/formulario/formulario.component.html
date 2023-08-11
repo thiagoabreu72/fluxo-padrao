@@ -6,53 +6,24 @@
       id="email"
       type="text"
       [value]="this.camposFormulario.email"
-      disabled
+      [disabled]="this.desabilitaEmail"
     />
 
     <label for="posto">Posto de Trabalho</label>
-    <!-- <input
-      id="posto"
-      list="posto2"
-      class="form-control"
-      #valorPosto
-      (click)="valorPosto.value = ''"
-      (change)="this.getPostoSelecionado(valorPosto.value)"
-    /> -->
     <input
       id="posto"
       list="posto2"
       class="form-control"
       [(ngModel)]="this.camposFormulario.posto"
+      (change)="this.getPostoSelecionado(this.camposFormulario)"
     />
     <datalist id="posto2">
       <option
-        *ngFor="let info of this.info_posto.dados"
-        [value]="info.posTra + ' - ' + info.desRed"
+        *ngFor="let info of this.parametrosPosto.dados"
+        [value]="info.estPos + ' - ' + info.posTra + ' - ' + info.desRed"
       ></option>
     </datalist>
-    <!-- <div
-      *ngIf="this.camposFormulario.posto !== '' ? this.postSpinner() : ''"
-    ></div> -->
 
-    <!-- <app-mensagem [dadosMensagem]="this.dadosMensagem" *ngIf="this.dadosMensagem.tipo !== 0"></app-mensagem> -->
     <br />
-
-    <!-- <p-messages></p-messages> -->
-
-    <!-- <p-table
-      [value]="this.info_posto.selecionado"
-      [tableStyle]="{ 'min-width': '50rem' }"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Posto de Trabalho</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-posto>
-        <tr>
-          <td>{{ posto }}</td>
-        </tr>
-      </ng-template>
-    </p-table> -->
   </div>
 </div>

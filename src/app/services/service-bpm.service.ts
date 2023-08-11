@@ -6,6 +6,7 @@ import { Posto } from '../interfaces/posto-trabalho.interface';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { converteUrl } from '../functions/functions';
 import { Formulario } from '../interfaces/formulario.interface';
+import { ColaboradorPosto } from '../interfaces/colaborador.interface';
 
 declare var workflowCockpit: any;
 
@@ -17,8 +18,9 @@ export class ServiceBpmService {
   private urlSenior: string = ''; //= environment.urlG5Hom;
   private contexto: string = ''; //= 'SXI-API';
   private modulo: string = 'rubi';
-  private portasG5 = ['getPostoTrabalho'];
+  private portasG5 = ['getPostoTrabalho', 'getColaboradoresPosto'];
   private urlPosto: string = '';
+  private urlColaborador: string = '';
   private dadosUsuario: DadosUsuario = { email: '' };
   private variaveisProcesso: ProcessVariables[] = [];
   dadosFormulario: Formulario = {};
@@ -30,10 +32,6 @@ export class ServiceBpmService {
       onSubmit: this._saveData,
       onError: this._rollback,
     });
-
-    // const tarefa = '' + window.location.href.match(/#!\/(.*?)\//)![1];
-
-    console.log(window.location.href.match(/#!\/(.*?)\//)![1]);
 
     // Obter parâmetros da página index.
     const elemento: any = document.querySelector('app-root');
@@ -48,10 +46,16 @@ export class ServiceBpmService {
       this.modulo,
       this.contexto
     );
+    this.urlColaborador = converteUrl(
+      this.urlSenior,
+      this.portasG5[1],
+      this.modulo,
+      this.contexto
+    );
   }
 
-  private getToken = new Subject<Formulario>(); // Criação do canal de comunicação.
-  token$ = this.getToken.asObservable(); // instanciando o Observable para mudanças no valor na variável
+  private getDados = new Subject<Formulario>(); // Criação do canal de comunicação.
+  dados$ = this.getDados.asObservable(); // instanciando o Observable para mudanças no valor da variável
 
   // Essa função é chamada quando o usuário clicar no botão 'Enviar'
   private _saveData = (_data: Data, _info: Info): any => {
@@ -62,43 +66,70 @@ export class ServiceBpmService {
 
   // Função init é chamada ao abrir o formulário
   private _loadData = async (_data: Data, _info: Info): Promise<void> => {
-    await _info.getInfoFromProcessVariables().then((dados) => {
-      this.variaveisProcesso = dados;
-      let variavel = new Map();
+    if (this.getEtapa() == 'conferencia') {
+      await _info.getInfoFromProcessVariables().then((dados) => {
+        this.variaveisProcesso = dados;
+        console.table(this.variaveisProcesso);
+        let variavel = new Map();
 
-      for (let i = 0; i < this.variaveisProcesso.length; i++) {
-        variavel.set(
-          this.variaveisProcesso[i].key,
-          this.variaveisProcesso[i].value
+        for (let i = 0; i < this.variaveisProcesso.length; i++) {
+          variavel.set(
+            this.variaveisProcesso[i].key,
+            this.variaveisProcesso[i].value
+          );
+        }
+
+        this.dadosFormulario.email = variavel.get('email');
+        this.dadosFormulario.posto = variavel.get('posto');
+
+        console.log(this.dadosFormulario);
+        this.getDados.next(
+          this.dadosFormulario ? this.dadosFormulario : this.dadosFormulario
         );
-      }
+      });
+    }
 
-      this.dadosFormulario.email = variavel.get('email');
-      this.dadosFormulario.posto = variavel.get('posto');
-
-      this.getToken.next(
-        this.dadosFormulario ? this.dadosFormulario : this.dadosFormulario
-      );
-    });
-
-    await _info.getUserData().then((dados) => {
-      this.dadosFormulario.email = dados.email;
-    });
-    await _info.getPlatformData().then((dados) => {
-      this.dadosUsuario.access_token = dados.token.access_token;
-      this.getToken.next(
-        this.dadosFormulario ? this.dadosFormulario : this.dadosFormulario
-      );
-    });
+    if (this.getEtapa() == 'solicitacao') {
+      await _info.getUserData().then((dados) => {
+        this.dadosFormulario.email = dados.email;
+      });
+      await _info.getPlatformData().then((dados) => {
+        this.dadosUsuario.access_token = dados.token.access_token;
+        this.getDados.next(
+          this.dadosFormulario ? this.dadosFormulario : this.dadosFormulario
+        );
+      });
+    }
   };
 
-  private _rollback = (_data: Data, _info: Info): any => {};
+  private _rollback = (_data: Data, _info: Info): any => {
+    _data.error = 'teste';
+  };
 
+  // pega a etapa do fluxo via url. Obs.: a url no fluxo deve conter a etapa informada
+  getEtapa() {
+    return '' + window.location.href.match(/#!\/(.*?)\//)![1];
+  }
+
+  // requisição na G5 - Posto de trabalho
   getPostoTrabalho(empresa: Posto): Observable<Posto> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: `bearer ${this.dadosUsuario.access_token}`,
     });
     return this.http.post<Posto>(this.urlPosto, empresa, { headers });
+  }
+
+  // requisição na G5 - Colaboradores
+  getColaboradoresPosto(
+    parametros: ColaboradorPosto
+  ): Observable<ColaboradorPosto> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `bearer ${this.dadosUsuario.access_token}`,
+    });
+    return this.http.post<ColaboradorPosto>(this.urlColaborador, parametros, {
+      headers,
+    });
   }
 }
